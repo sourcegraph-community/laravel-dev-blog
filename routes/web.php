@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Parsed\Content;
+use Parsed\ContentParser;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +17,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('index');
+    $articles = [];
+    $limit = 10;
+
+    foreach (glob(storage_path('app') . '/*.md') as $file) {
+        $article = new Content(file_get_contents($file));
+        $article->parse(new ContentParser());
+
+        $articles[] = $article;
+    }
+
+    krsort($articles);
+    $articles = array_slice($articles, 0, $limit);
+    return view('index', [
+        'articles' => $articles
+    ]);
 });

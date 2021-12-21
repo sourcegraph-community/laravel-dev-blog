@@ -11,7 +11,7 @@
         "laravel/framework": "^8.65",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "librarianphp/parsed": "^0.3.5",
+        "librarianphp/parsed": "^0.3.6",
         "minicli/curly": "^0.1.2"
     },
     "require-dev": {

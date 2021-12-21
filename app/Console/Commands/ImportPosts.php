@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Date;
 use Minicli\Curly\Client;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -42,9 +41,14 @@ class ImportPosts extends Command
     public function handle()
     {
         $crawler = new Client();
-        $articles_response = $crawler->get('https://dev.to/api/articles?username=sourcegraph');
+        $headers = [
+            'User-Agent: curly 0.1',
+        ];
+
+        $articles_response = $crawler->get('https://dev.to/api/articles?username=erikaheidi', $headers);
 
         if ($articles_response['code'] !== 200) {
+            var_dump($articles_response);
             $this->error('Error while contacting the dev.to API.');
 
             return Command::FAILURE;
@@ -54,14 +58,14 @@ class ImportPosts extends Command
         foreach ($articles as $article) {
             $article_slug = $article['slug'];
             $published = new Carbon($article['published_at']);
-            $filename = $published->year . $published->month . $published->day . '-' . $article_slug . '.md';
+            $filename = $published->format('YmdH') . '-' . $article_slug .'.md';
 
             if (Storage::disk('local')->exists($filename)) {
                 continue;
             }
 
             $endpoint = sprintf('https://dev.to/api/articles/%s', $article['id']);
-            $article_query = $crawler->get($endpoint);
+            $article_query = $crawler->get($endpoint, $headers);
 
             if ($article_query['code'] == 200) {
                 $article_full = json_decode($article_query['body'], true);
