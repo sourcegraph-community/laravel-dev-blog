@@ -45,7 +45,7 @@ class ImportPosts extends Command
             'User-Agent: curly 0.1',
         ];
 
-        $articles_response = $crawler->get('https://dev.to/api/articles?username=erikaheidi', $headers);
+        $articles_response = $crawler->get('https://dev.to/api/articles?username=erikaheidi&per_page=10', $headers);
 
         if ($articles_response['code'] !== 200) {
             var_dump($articles_response);
